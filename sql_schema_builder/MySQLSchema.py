@@ -35,9 +35,11 @@ class MySQLSchema():
                         column_definition += ' DEFAULT '
                         column_definition += self._conn.escape(str(default_value))
 
-                    table_columns[name] = column_definition
-                    if is_in_primary_key:
-                        table_columns[name + '__alt'] = type.upper()
+                    table_columns[name] = {
+                        'type': type.upper(),
+                        'column_definition': column_definition,
+                        'is_in_primary_key': is_in_primary_key
+                    }
 
             except pymysql.err.ProgrammingError as e:
                 if e.args[0] == pymysql.constants.ER.NO_SUCH_TABLE:
@@ -104,8 +106,8 @@ class MySQLSchema():
                     raise
 
             else:
-                for name in table_columns.keys():
-                    if not name.endswith('__alt') and name not in [field['name'] for field in sql_fields]:
+                for name, metadata in table_columns.items():
+                    if name not in [field['name'] for field in sql_fields]:
                         sql = 'ALTER TABLE {0} DROP COLUMN {1}'.format(
                             table_name, name)
                         try:
@@ -124,8 +126,11 @@ class MySQLSchema():
                         except pymysql.err.ProgrammingError as e:
                             raise
                     else:
-                        if field['column_definition'] == table_columns[field['name']] or \
-                            field['column_definition'] == table_columns.get(field['name'] + '__alt', []):
+                        if field['column_definition'] == table_columns[field['name']]['column_definition']:
+                            prev_field_name = field['name']
+                            continue
+                        # MySQL implicitly adds NOT NULL to columns in PRIMARY KEY.
+                        if table_columns[field['name']]['is_in_primary_key'] and field['column_definition'] == table_columns[field['name']]['type']:
                             prev_field_name = field['name']
                             continue
                         sql = 'ALTER TABLE {0} CHANGE COLUMN {1} {2} {3}'.format(
@@ -147,15 +152,16 @@ class MySQLSchema():
 
         with self._conn.cursor() as cursor:
 
+            drop_primary_key_pending = False
+
             for index_name, index_schema in table_indexes.items():
                 if index_schema not in sql_indexes:
                     if index_schema['type'] == 'PRIMARY':
-                        sql = 'ALTER TABLE {0} DROP PRIMARY KEY'.format(
-                            table_name)
-                    else:
-                        sql = 'ALTER TABLE {0} DROP INDEX {1}'.format(
-                            table_name, index_name)
+                        drop_primary_key_pending = True
+                        continue
 
+                    sql = 'ALTER TABLE {0} DROP INDEX {1}'.format(
+                        table_name, index_name)
                     try:
                         cursor.execute(sql)
                     except pymysql.err.ProgrammingError as e:
@@ -169,8 +175,11 @@ class MySQLSchema():
                         break
                 if not index_exists:
                     if index['type'] == 'PRIMARY':
-                        sql = 'ALTER TABLE {0} ADD PRIMARY KEY ({1})'.format(
-                            table_name, ','.join(index['columns']))
+                        sql = 'ALTER TABLE {0} {1} ADD PRIMARY KEY ({2})'.format(
+                            table_name,
+                            ' DROP PRIMARY KEY,' if drop_primary_key_pending else '',
+                            ','.join(index['columns']))
+                        drop_primary_key_pending = False
                     elif index['type'] == 'UNIQUE':
                         sql = 'ALTER TABLE {0} ADD UNIQUE INDEX ({1})'.format(
                             table_name, ','.join(index['columns']))
@@ -182,6 +191,14 @@ class MySQLSchema():
                         cursor.execute(sql)
                     except pymysql.err.ProgrammingError as e:
                         raise
+
+            if drop_primary_key_pending:
+                sql = 'ALTER TABLE {0} DROP PRIMARY KEY'.format(
+                    table_name)
+                try:
+                    cursor.execute(sql)
+                except pymysql.err.ProgrammingError as e:
+                    raise
 
         return True
 
