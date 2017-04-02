@@ -12,8 +12,8 @@ and when you ship update of your application to production, your database schema
 to newest schema.
 
 The big benefit of keeping the schema inside your code is that it is right there in the same version control
-system of your choice. You don't need to synchronize changes in your app code, some other
-sql schema keeping scripts and the database.
+system of your choice - along with history of all changes made to it. You don't need to synchronize changes
+in your app code, some other sql schema keeping scripts and the database.
 
 
 ## Idea
@@ -83,7 +83,7 @@ The library is compatible with python 2.7+ and python 3.4+.
     db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
     db_schema.UpdateSchema(*_get_schema())
 
-`I` stands for integer, `I8` for big integer, `C` for varchar, `F` for float etc. ([reference](#reference))
+`I` stands for integer, `I8` for big integer, `C` for varchar, `F` for float etc. ([DDL reference](#ddl))
 
 Now, whenever you need to add some new table, column, index or alter them (e.g. drop or change column's type) you
 just edit above schema, increase its version number (to e.g. 1.020) and you're done.
@@ -92,8 +92,8 @@ just edit above schema, increase its version number (to e.g. 1.020) and you're d
 ## Quick start
 
 The above sample code is all you need to get started.
-A little bigegr example that also illustrates [data migration convention](#data-migrations) can be found in the
-[examples](./example/example-datamigration.py) directory.
+A little bigger example that also illustrates [data migration convention](#data-migrations) can be found in the
+[examples](./examples/example-datamigration.py) directory.
 
 
 ## Comparison with other schema migration tools
@@ -110,7 +110,7 @@ also have their own way of solving the problem. So, why would someone choose `sq
 - **No need to deploy and run any separate migration script.**
 
 The method works even if you e.g. don't have ssh access to your client/customer environment.
-You can send your updated application code and the schema will be always up to date after the first run.
+You can send your updated application code and the schema will be brought up to date after the first run.
 
 - **No need to write migration queries/scripts with every little change.**
 
@@ -144,7 +144,7 @@ Its primary intent was to be used in web services written in non full-stack fram
 - Not all column types are supported.
 
 It's very easy to add new types when the need arises. Just modify `UpdateTableSchema()` function
-in file [SQLSchemaBuilder.py](./sql_schema_builder/SQLSchemaBuilder.py)
+in file [MySQLSchema.py](./sql_schema_builder/MySQLSchema.py)
 and make a pull-request.
 
 - Extra SELECT query after connecting to the database.
@@ -156,7 +156,7 @@ If you do it on every request to your service it may or may not pose a problem f
 
 - No rollback feature.
 
-This is _by design_, as I agree with [sqlturk](https://pypi.python.org/pypi/sqlturk) author point of view, that downgrade
+This is _by design_, as I agree with [sqlturk](https://pypi.python.org/pypi/sqlturk) author's point of view, that downgrade
 scripts may add more problems than they solve.
 
 
