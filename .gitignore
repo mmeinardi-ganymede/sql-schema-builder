@@ -1,2 +1,5 @@
 *.BAK
 *.pyc
+build/
+dist/
+sql_schema_builder.egg-info/
