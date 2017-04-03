@@ -1,4 +1,9 @@
 
+## Unreleased
+
++ Rename `migrate_function` to `post_migrate_callback`. Added `pre_migrate_callback`.
+
+
 ## 1.1.0 (2017-04-03)
 
 + Ability to reorder columns.

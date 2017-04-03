@@ -61,4 +61,4 @@ class DatabasePremierLeague():
 
 conn = pymysql.connect(host='localhost', user='root', passwd='xxx', db='premierleague')
 db_schema = SQLSchemaBuilder(pymysql_conn=conn)
-db_schema.UpdateSchema(*DatabasePremierLeague._get_schema(), migrate_function=DatabasePremierLeague._migrate_schema)
+db_schema.UpdateSchema(*DatabasePremierLeague._get_schema(), post_migrate_callback=DatabasePremierLeague._migrate_schema)

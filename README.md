@@ -115,7 +115,7 @@ You can send your updated application code and the schema will be brought up to 
 - **No need to write migration queries/scripts with every little change.**
 
 Often incremental changes to the schema are minimal and non-intrusive such as adding new table, new column
-or modifying column's type e.g. widening VARCHAR field.
+or modifying column's type e.g. widening VARCHAR field or adding new ENUM value.
 Writing separate migration script for each such change is far from enjoyable. Especially when
 you end up with dozens of them for simple database during development.
 
@@ -187,7 +187,7 @@ In case you need to modify or initialize some data in your schema after the migr
                 cursor.execute(sql, (row[1], row[0]))
 
     db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
-    db_schema.UpdateSchema(_get_schema(), migrate_function=_migrate_schema)
+    db_schema.UpdateSchema(_get_schema(), post_migrate_callback=_migrate_schema)
 
 
 You can write many more `if` statements like this in `_migrate_schema()` function to bring data in your database
@@ -196,7 +196,7 @@ to desired state after migration from previous schema version.
 Parameter `db_schema_version` is the old schema version that database schema was up to, before migration happened.
 
 Parameter `cursor` is [PyMySQL](https://github.com/PyMySQL/PyMySQL) cursor which you can use to alter data in your database.
-The `migrate_function` will be called inside transaction, so you don't have to commit your queries.
+The `post_migrate_callback` will be called inside transaction, so you don't have to commit your queries.
 If you explicitly `return False` from the callback, the `UpdateSchema()` will also return `False`.
 In that case schema version in the database will not be increased, but all schema manipulations will be done anyway.
 That's because
@@ -217,7 +217,7 @@ That's because
     for schema manipulation and later data access.
 
 
-* `UpdateSchema(schema_dict, schema_version, migrate_function=None)`
+* `UpdateSchema(schema_dict, schema_version, post_migrate_callback=None, pre_migrate_callback=None)`
 
     - Main function that checks if your database schema is up to date and issues CREATE/ALTER statements if necessary.
     Parameters:
@@ -227,16 +227,22 @@ That's because
 
     - The schema version will be stored in your database in the table `cfg_dbase` that will be created if it doesn't exist.
 
-    - You can pass `migrate_function` which is a callback that will be called after schema migration is done.
+    - You can pass `post_migrate_callback` which is a callback that will be called after schema migration is done.
     Its declaration has 2 parameters:
 
-        `def migrate_function(db_schema_version, cursor)`
+        `def post_migrate_callback(db_schema_version, cursor)`
 
         * `db_schema_version` is the version of the schema *before* migration.
         * `cursor` is a [PyMySQL](https://github.com/PyMySQL/PyMySQL) cursor which you can execute sql statements on.
 
     - The function doesn't alter/drop any tables it doesn't know about.
-    So if you want to drop the table, remove it from your code, and execute DROP TABLE in the `migrate_function`.
+    So if you want to drop the table, remove it from your code, and execute DROP TABLE in the `post_migrate_callback`.
+
+    - There is also parameter `pre_migrate_callback` analogous to `post_migrate_callback`, but called before
+        migrating the schema. Its primary use case is for column renaming. If you would just rename column in DDL,
+        the library would drop the old column and create new one losing the contents. To avoid this, you should issue
+        proper ALTER TABLE statement that renames the column, before the schema migration will take place.
+        If you explicitly `return False` from the callback, the rest of the migration will be abandoned.
 
     - Return values:
         - `True` - Schema upgrade succeeded or was already up to date.

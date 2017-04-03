@@ -44,7 +44,7 @@ class SQLSchemaBuilder:
             self._conn.close()
             self._conn = None
 
-    def UpdateSchema(self, schema_dict, schema_version, migrate_function=None):
+    def UpdateSchema(self, schema_dict, schema_version, post_migrate_callback=None, pre_migrate_callback=None):
 
         self._connect_to_database()
         if self._conn is None:
@@ -76,13 +76,20 @@ class SQLSchemaBuilder:
             if db_schema_version < schema_version:
                 mysql_schema = MySQLSchema(self._conn)
 
+                if pre_migrate_callback is not None:
+                    migration_success = pre_migrate_callback(db_schema_version, cursor)
+                    if migration_success == False:
+                        self._conn.rollback()
+                        return False
+
                 for table_name, table_schema in schema_dict.items():
                     if not mysql_schema.UpdateTableSchema(table_name, table_schema):
                         return False
 
-                if migrate_function is not None:
-                    migration_success = migrate_function(db_schema_version, cursor)
+                if post_migrate_callback is not None:
+                    migration_success = post_migrate_callback(db_schema_version, cursor)
                     if migration_success == False:
+                        self._conn.rollback()
                         return False
 
                 sql = "REPLACE cfg_dbase (name, value) VALUES (%s, %s)"
