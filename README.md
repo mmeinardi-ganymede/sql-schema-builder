@@ -32,7 +32,7 @@ like [django](https://www.djangoproject.com/) or [web2py](http://www.web2py.com/
 
 ## Installation/upgrade
 
-    pip install sql-schema-builder
+    pip install -U sql-schema-builder
 
 The library is compatible with python 2.7+ and python 3.4+.
 
