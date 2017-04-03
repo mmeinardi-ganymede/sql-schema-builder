@@ -1,5 +1,5 @@
 
-## Unreleased
+## 1.2.0 (2017-04-04)
 
 + Rename `migrate_function` to `post_migrate_callback`. Added `pre_migrate_callback`.
 
