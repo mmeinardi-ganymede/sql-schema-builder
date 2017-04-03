@@ -18,6 +18,7 @@ class MySQLSchema():
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 table_columns = {}
+                prev_name = None
                 for row in result:
                     name = row[0]
                     type = row[1]
@@ -36,10 +37,11 @@ class MySQLSchema():
                         column_definition += self._conn.escape(str(default_value))
 
                     table_columns[name] = {
-                        'type': type.upper(),
                         'column_definition': column_definition,
-                        'is_in_primary_key': is_in_primary_key
+                        'is_in_primary_key': is_in_primary_key,
+                        'prev_name': prev_name
                     }
+                    prev_name = name
 
             except pymysql.err.ProgrammingError as e:
                 if e.args[0] == pymysql.constants.ER.NO_SUCH_TABLE:
@@ -90,6 +92,25 @@ class MySQLSchema():
 
     #-----------------------------------------------------------------------------------------------------------
 
+    def _column_definition_matches(self, sql_field_definition, table_column_definition, is_in_primary_key):
+        current_column_definition = table_column_definition
+        if sql_field_definition == current_column_definition:
+            return True
+
+        # MySQL implicitly adds NOT NULL/DEFAULT to columns in PRIMARY KEY.
+        if is_in_primary_key:
+            current_column_definition = current_column_definition.replace(' NOT NULL', '')
+            if sql_field_definition == current_column_definition:
+                return True
+            idx = current_column_definition.find(' DEFAULT')
+            if idx > 0:
+                current_column_definition = current_column_definition[:idx]
+                if sql_field_definition == current_column_definition:
+                    return True
+
+        return False
+
+
     def _update_table_columns(self, table_name, sql_fields):
 
         table_columns = self._get_table_columns(table_name)
@@ -126,19 +147,22 @@ class MySQLSchema():
                         except pymysql.err.ProgrammingError as e:
                             raise
                     else:
-                        if field['column_definition'] == table_columns[field['name']]['column_definition']:
-                            prev_field_name = field['name']
-                            continue
-                        # MySQL implicitly adds NOT NULL to columns in PRIMARY KEY.
-                        if table_columns[field['name']]['is_in_primary_key'] and field['column_definition'] == table_columns[field['name']]['type']:
-                            prev_field_name = field['name']
-                            continue
-                        sql = 'ALTER TABLE {0} CHANGE COLUMN {1} {2} {3}'.format(
-                            table_name, field['name'], field['name'], field['column_definition'])
-                        try:
-                            cursor.execute(sql)
-                        except pymysql.err.ProgrammingError as e:
-                            raise
+
+                        table_column = table_columns[field['name']]
+
+                        if not self._column_definition_matches(field['column_definition'],
+                            table_column['column_definition'],
+                            table_column['is_in_primary_key']) or \
+                            prev_field_name != table_column['prev_name']:
+
+                            sql = 'ALTER TABLE {0} CHANGE COLUMN {1} {2} {3} {4}'.format(
+                                table_name, field['name'], field['name'], field['column_definition'],
+                                'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
+                            try:
+                                print(sql)
+                                cursor.execute(sql)
+                            except pymysql.err.ProgrammingError as e:
+                                raise
 
                     prev_field_name = field['name']
 

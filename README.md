@@ -85,7 +85,7 @@ The library is compatible with python 2.7+ and python 3.4+.
 
 `I` stands for integer, `I8` for big integer, `C` for varchar, `F` for float etc. ([DDL reference](#ddl))
 
-Now, whenever you need to add some new table, column, index or alter them (e.g. drop or change column's type) you
+Now, whenever you need to add some new table, column, index or alter them (e.g. drop or change column's type/order) you
 just edit above schema, increase its version number (to e.g. 1.020) and you're done.
 
 

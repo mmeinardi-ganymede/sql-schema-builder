@@ -1,6 +1,7 @@
 
 ## Unreleased
 
++ Ability to reorder columns.
 * Proper handling of changes to INDEX PRIMARY with AUTO_INCREMENT column.
 
 
