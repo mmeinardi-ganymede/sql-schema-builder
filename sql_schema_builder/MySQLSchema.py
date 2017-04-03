@@ -110,7 +110,6 @@ class MySQLSchema():
 
         return False
 
-
     def _update_table_columns(self, table_name, sql_fields):
 
         table_columns = self._get_table_columns(table_name)
@@ -147,7 +146,6 @@ class MySQLSchema():
                         except pymysql.err.ProgrammingError as e:
                             raise
                     else:
-
                         table_column = table_columns[field['name']]
 
                         if not self._column_definition_matches(field['column_definition'],
@@ -159,7 +157,6 @@ class MySQLSchema():
                                 table_name, field['name'], field['name'], field['column_definition'],
                                 'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
                             try:
-                                print(sql)
                                 cursor.execute(sql)
                             except pymysql.err.ProgrammingError as e:
                                 raise
