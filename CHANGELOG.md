@@ -1,5 +1,5 @@
 
-## Unreleased
+## 1.1.0 (2017-04-03)
 
 + Ability to reorder columns.
 * Proper handling of changes to INDEX PRIMARY with AUTO_INCREMENT column.
