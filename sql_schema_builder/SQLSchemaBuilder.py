@@ -1,4 +1,4 @@
-from MySQLSchema import MySQLSchema
+from sql_schema_builder.MySQLSchema import MySQLSchema
 import pymysql
 
 
