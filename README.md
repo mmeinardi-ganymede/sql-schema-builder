@@ -39,49 +39,51 @@ The library is compatible with python 2.7+ and python 3.4+.
 
 ## Example usage ([example-quickstart.py](./examples/example-quickstart.py))
 
-    from sql_schema_builder.SQLSchemaBuilder import SQLSchemaBuilder
+```python
+from sql_schema_builder.SQLSchemaBuilder import SQLSchemaBuilder
 
-    def _get_schema():
+def _get_schema():
 
-        schema = {}
-        schema_version = 1.019
+    schema = {}
+    schema_version = 1.019
 
-        schema['teams'] = """
-            id_team I NOTNULL DEFAULT 0,
-            name C(32),
-            coach_name C(64),
+    schema['teams'] = """
+        id_team I NOTNULL DEFAULT 0,
+        name C(32),
+        coach_name C(64),
 
-            points I,
-            matches_won I,
-            matches_drawn I,
-            matches_lost I,
+        points I,
+        matches_won I,
+        matches_drawn I,
+        matches_lost I,
 
-            timestamp_updated I8,
-            INDEX PRIMARY (id_team),
-            INDEX (timestamp_updated)
-        """
+        timestamp_updated I8,
+        INDEX PRIMARY (id_team),
+        INDEX (timestamp_updated)
+    """
 
-        schema['players'] = """
-            id_player I NOTNULL DEFAULT 0,
-            name C(64),
-            id_team I NOTNULL,
+    schema['players'] = """
+        id_player I NOTNULL DEFAULT 0,
+        name C(64),
+        id_team I NOTNULL,
 
-            shirt_number I,
-            position ENUM('', 'goalkeeper', 'defender', 'midfielder', 'forward') DEFAULT '',
+        shirt_number I,
+        position ENUM('', 'goalkeeper', 'defender', 'midfielder', 'forward') DEFAULT '',
 
-            goals_scored I,
+        goals_scored I,
 
-            height I,
-            weight F,
+        height I,
+        weight F,
 
-            INDEX PRIMARY (id_player),
-            INDEX (id_team, position, shirt_number)
-        """
+        INDEX PRIMARY (id_player),
+        INDEX (id_team, position, shirt_number)
+    """
 
-        return schema, schema_version
+    return schema, schema_version
 
-    db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
-    db_schema.UpdateSchema(*_get_schema())
+db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
+db_schema.UpdateSchema(*_get_schema())
+```
 
 `I` stands for integer, `I8` for big integer, `C` for varchar, `F` for float etc. ([DDL reference](#ddl))
 
@@ -164,31 +166,32 @@ scripts may add more problems than they solve.
 
 In case you need to modify or initialize some data in your schema after the migration, you can write code similar to this:
 
-    def _get_schema():
+```python
+def _get_schema():
 
-        schema_version = 1.020
+    schema_version = 1.020
 
-        schema['teams'] = """
-            ...
-            total_goals I,
-            ...
-        """
-
+    schema['teams'] = """
         ...
+        total_goals I,
+        ...
+    """
 
-    def _migrate_schema(db_schema_version, cursor):
+    ...
 
-        if db_schema_version < 1.020:
-            sql = """SELECT id_team, SUM(goals_scored) FROM players GROUP BY id_team"""
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-            for row in rows:
-                sql = """UPDATE teams SET total_goals = %s WHERE id_team = %s AND total_goals IS NULL"""
-                cursor.execute(sql, (row[1], row[0]))
+def _migrate_schema(db_schema_version, cursor):
 
-    db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
-    db_schema.UpdateSchema(_get_schema(), post_migrate_callback=_migrate_schema)
+    if db_schema_version < 1.020:
+        sql = """SELECT id_team, SUM(goals_scored) FROM players GROUP BY id_team"""
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        for row in rows:
+            sql = """UPDATE teams SET total_goals = %s WHERE id_team = %s AND total_goals IS NULL"""
+            cursor.execute(sql, (row[1], row[0]))
 
+db_schema = SQLSchemaBuilder(host='localhost', port=3306, user='root', passwd='xxx', db='premierleague')
+db_schema.UpdateSchema(_get_schema(), post_migrate_callback=_migrate_schema)
+```
 
 You can write many more `if` statements like this in `_migrate_schema()` function to bring data in your database
 to desired state after migration from previous schema version.
