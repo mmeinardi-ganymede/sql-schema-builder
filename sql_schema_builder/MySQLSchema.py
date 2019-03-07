@@ -128,7 +128,7 @@ class MySQLSchema():
             else:
                 for name, metadata in table_columns.items():
                     if name not in [field['name'] for field in sql_fields]:
-                        sql = 'ALTER TABLE {0} DROP COLUMN {1}'.format(
+                        sql = 'ALTER TABLE {0} DROP COLUMN `{1}`'.format(
                             table_name, name)
                         try:
                             cursor.execute(sql)
@@ -138,7 +138,7 @@ class MySQLSchema():
                 prev_field_name = None
                 for field in sql_fields:
                     if field['name'] not in table_columns:
-                        sql = 'ALTER TABLE {0} ADD COLUMN {1} {2} {3}'.format(
+                        sql = 'ALTER TABLE {0} ADD COLUMN `{1}` {2} {3}'.format(
                             table_name, field['name'], field['column_definition'],
                             'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
                         try:
@@ -153,7 +153,7 @@ class MySQLSchema():
                             table_column['is_in_primary_key']) or \
                             prev_field_name != table_column['prev_name']:
 
-                            sql = 'ALTER TABLE {0} CHANGE COLUMN {1} {2} {3} {4}'.format(
+                            sql = 'ALTER TABLE {0} CHANGE COLUMN `{1}` `{2}` {3} {4}'.format(
                                 table_name, field['name'], field['name'], field['column_definition'],
                                 'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
                             try:
@@ -227,7 +227,7 @@ class MySQLSchema():
 
     def UpdateTableSchema(self, table_name, schema):
 
-        field_pattern = r'^\s*(\w+)\s+(\w+)(\(([^)]+)\))?(\s+AUTO_INCREMENT)?(\s+NOTNULL)?(\s+DEFAULT\s+\'?(\w*)\'?)?\s*$'
+        field_pattern = r'^\s*(\w+)\s+(\w+)(\(([^)]+)\))?(\s+UNSIGNED)?(\s+AUTO_INCREMENT)?(\s+NOTNULL)?(\s+DEFAULT\s+\'?(\w*)\'?)?\s*$'
         index_pattern = r'^\s*INDEX\s+((\w+)\s+)?\(([^\)]+)\)\s*$'
 
         column_types = {
@@ -239,9 +239,12 @@ class MySQLSchema():
             'N': 'DECIMAL(10,2)',
 
             'C': 'VARCHAR',
+            'MX': 'MEDIUMTEXT',
             'X': 'LONGTEXT',
+            'MB': 'MEDIUMBLOB',
             'B': 'LONGBLOB',
             'J': 'JSON',
+            'BIN': 'BINARY',
 
             'D': 'DATE',
             'T': 'DATETIME',
@@ -273,9 +276,10 @@ class MySQLSchema():
             name = matches.group(1)
             type = matches.group(2)
             type_arguments = matches.group(4)
-            is_autoincrement = matches.group(5) is not None
-            is_notnull = matches.group(6) is not None
-            default_value = matches.group(8)
+            is_unsigned = matches.group(5) is not None
+            is_autoincrement = matches.group(6) is not None
+            is_notnull = matches.group(7) is not None
+            default_value = matches.group(9)
 
             if type not in column_types:
                 raise ValueError('Invalid type specifier: ' + field)
@@ -283,12 +287,16 @@ class MySQLSchema():
                 raise ValueError('Char type requires size: ' + field)
             if type == 'ENUM' and not type_arguments:
                 raise ValueError('Enum type requires list of possible values: ' + field)
-            if type not in ['C', 'ENUM'] and type_arguments:
+            if type == 'BIN' and not type_arguments:
+                raise ValueError('Binary type requires size: ' + field)
+            if type not in ['C', 'ENUM', 'BIN'] and type_arguments:
                 raise ValueError('Only char or enum type can have arguments: ' + field)
 
             column_definition = column_types[type]
-            if type in ['C', 'ENUM']:
+            if type in ['C', 'ENUM', 'BIN']:
                 column_definition += '({0})'.format(type_arguments)
+            if is_unsigned:
+                column_definition += ' UNSIGNED'
             if is_autoincrement:
                 column_definition += ' AUTO_INCREMENT'
             if is_notnull:

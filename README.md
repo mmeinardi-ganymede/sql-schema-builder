@@ -266,18 +266,22 @@ Available abbreviations and MySQL types they represent in DDL:
 | `F` | `DOUBLE` |
 | `N` | `DECIMAL(10,2)` |
 | `C(n)` | `VARCHAR(n)` |
+| `MX` | `MEDIUMTEXT` |
 | `X` | `LONGTEXT` |
+| `MB` | `MEDIUMBLOB` |
 | `B` | `LONGBLOB` |
+| `BIN(n)` | `BINARY(n)` |
 | `J` | `JSON` |
 | `D` | `DATE` |
 | `T` | `DATETIME` |
 | `ENUM(...)` | `ENUM(...)` |
 
-You can use following attributes on columns:
+You can use following attributes on columns (in that particular order):
 
+- `UNSIGNED`
+- `AUTO_INCREMENT`
 - `NOTNULL`
 - `DEFAULT x`
-- `AUTO_INCREMENT`
 
 Following INDEX attributes are supported:
 

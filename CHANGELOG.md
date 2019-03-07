@@ -1,4 +1,11 @@
 
+## 1.3.0 (2019-03-07)
+
++ Added support for MySQL column types: `MEDIUMTEXT`, `MEDIUMBLOB`, `BINARY`.
++ Added support for MySQL column attribute: `UNSIGNED`.
+* Added quoting of column names in SQL queries.
+
+
 ## 1.2.1 (2017-04-07)
 
 * Fix internal import path.
