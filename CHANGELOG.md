@@ -1,4 +1,9 @@
 
+## 1.3.1 (2019-03-12)
+
+* Added more quoting of column names in SQL queries.
+
+
 ## 1.3.0 (2019-03-07)
 
 + Added support for MySQL column types: `MEDIUMTEXT`, `MEDIUMBLOB`, `BINARY`.

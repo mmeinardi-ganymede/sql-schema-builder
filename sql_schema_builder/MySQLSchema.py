@@ -118,7 +118,7 @@ class MySQLSchema():
             if len(table_columns) == 0:
                 sql = "CREATE TABLE {0} ({1})".format(
                     table_name,
-                    ','.join('{0} {1}'.format(f['name'], f['column_definition']) for f in sql_fields))
+                    ','.join('`{0}` {1}'.format(f['name'], f['column_definition']) for f in sql_fields))
                 sql = sql.replace('AUTO_INCREMENT', '')
                 try:
                     cursor.execute(sql)
@@ -270,7 +270,7 @@ class MySQLSchema():
                 if index_type not in (None, 'PRIMARY', 'UNIQUE'):
                     raise ValueError('Invalid index type: ' + field)
 
-                sql_indexes.append({'type': index_type, 'columns': [x.strip() for x in index_fields.split(',')] })
+                sql_indexes.append({'type': index_type, 'columns': ['`{}`'.format(x.strip()) for x in index_fields.split(',')] })
                 continue
 
             name = matches.group(1)
