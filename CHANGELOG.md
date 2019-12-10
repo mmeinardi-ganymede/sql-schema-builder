@@ -1,4 +1,9 @@
 
+## 1.3.2 (2019-12-10)
+
+* Fix quoting of column names read from table indexes. Don't recreate indexes when not necessary.
+
+
 ## 1.3.1 (2019-03-12)
 
 * Added more quoting of column names in SQL queries.

@@ -66,7 +66,7 @@ class MySQLSchema():
                     non_unique = row[1]
                     index_name = row[2]
                     seq_in_index = row[3]
-                    column_name = row[4]
+                    column_name = '`{0}`'.format(row[4])
 
                     type = None
                     if index_name == 'PRIMARY':
