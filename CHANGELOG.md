@@ -1,4 +1,9 @@
 
+## 1.4.0 (2020-01-15)
+
++ Ability to automatically create new database.
+
+
 ## 1.3.2 (2019-12-10)
 
 * Fix quoting of column names read from table indexes. Don't recreate indexes when not necessary.

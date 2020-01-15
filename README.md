@@ -212,13 +212,14 @@ That's because
 
 `SQLSchemaBuilder`
 
-* `SQLSchemaBuilder(host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None)`
+* `SQLSchemaBuilder(host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None, create_db=False)`
 
     - Class constructor that expects address and credentials to the database on which schema you wish to operate on.
     If you are using [PyMySQL](https://github.com/PyMySQL/PyMySQL), you can alternatively pass its opened connection
     object as `pymysql_conn` parameter. The advantage of this is that you can reuse the same connection
     for schema manipulation and later data access.
-
+    Parameters:
+        * `create_db` - If set to `True` and the database doesn't exist yet, it will be created.
 
 * `UpdateSchema(schema_dict, schema_version, post_migrate_callback=None, pre_migrate_callback=None)`
 

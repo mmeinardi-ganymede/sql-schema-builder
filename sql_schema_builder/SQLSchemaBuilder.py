@@ -4,7 +4,7 @@ import pymysql
 
 class SQLSchemaBuilder:
 
-    def __init__(self, host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None):
+    def __init__(self, host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None, create_db=False):
         self._conn = None
         self._conn_params = {}
 
@@ -16,8 +16,29 @@ class SQLSchemaBuilder:
                 'port': port,
                 'user': user,
                 'passwd': passwd,
-                'db': db
+                'db': db if not create_db else None,
             }
+        if create_db:
+            self._create_database(db)
+            self._conn.select_db(db)
+
+    def _create_database(self, db_name):
+        self._connect_to_database()
+        if self._conn is None:
+            return False
+
+        try:
+            with self._conn.cursor() as cursor:
+                try:
+                    sql = "SHOW DATABASES LIKE %s"
+                    cursor.execute(sql, (db_name,))
+                    if cursor.fetchone() is None:
+                        sql = "CREATE DATABASE IF NOT EXISTS `{}`".format(db_name)
+                        cursor.execute(sql)
+                except Exception as e:
+                    pass
+        except Exception as e:
+            pass
 
     def _connect_to_database(self):
 
