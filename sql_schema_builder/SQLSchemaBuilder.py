@@ -34,6 +34,8 @@ class SQLSchemaBuilder:
                     cursor.execute(sql, (db_name,))
                     if cursor.fetchone() is None:
                         sql = "CREATE DATABASE IF NOT EXISTS `{}`".format(db_name)
+                        sql += " DEFAULT CHARACTER SET `utf8mb4`"
+                        sql += " DEFAULT COLLATE `utf8mb4_unicode_ci`"
                         cursor.execute(sql)
                 except Exception as e:
                     pass
@@ -52,7 +54,7 @@ class SQLSchemaBuilder:
                 user=self._conn_params['user'],
                 passwd=self._conn_params['passwd'],
                 db=self._conn_params['db'],
-                charset = 'utf8',
+                charset='utf8mb4',
                 autocommit=False)
         except pymysql.err.DatabaseError:
             self._conn = None

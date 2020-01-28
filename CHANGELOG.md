@@ -1,4 +1,9 @@
 
+## 1.4.1 (2020-01-28)
+
++ Use default character set `utf8mb4` and default collate `utf8mb4_unicode_ci` for newly created databases.
+
+
 ## 1.4.0 (2020-01-15)
 
 + Ability to automatically create new database.
