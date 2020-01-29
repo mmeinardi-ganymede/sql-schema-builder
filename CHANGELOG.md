@@ -1,4 +1,9 @@
 
+## Unreleased
+
+* Better schema change detection in `ENUM` columns - independent of whitespaces used between values.
+
+
 ## 1.4.1 (2020-01-28)
 
 + Use default character set `utf8mb4` and default collate `utf8mb4_unicode_ci` for newly created databases.

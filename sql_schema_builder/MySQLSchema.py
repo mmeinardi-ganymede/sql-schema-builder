@@ -27,7 +27,10 @@ class MySQLSchema():
                     default_value = row[4]
                     is_autoincrement = (row[5] == 'auto_increment')
 
-                    column_definition = type.upper()
+                    if type.upper().startswith('ENUM('):
+                        column_definition = type[:5].upper() + type[5:]
+                    else:
+                        column_definition = type.upper()
                     if is_autoincrement:
                         column_definition += ' AUTO_INCREMENT'
                     if is_notnull:
@@ -294,6 +297,9 @@ class MySQLSchema():
 
             column_definition = column_types[type]
             if type in ['C', 'ENUM', 'BIN']:
+                if type == 'ENUM':
+                    # Strip whitespace between enum values for canonical form.
+                    type_arguments = ','.join("'{}'".format(x) for x in re.findall(r"'([^']*?)'", type_arguments))
                 column_definition += '({0})'.format(type_arguments)
             if is_unsigned:
                 column_definition += ' UNSIGNED'
