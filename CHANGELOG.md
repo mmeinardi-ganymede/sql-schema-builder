@@ -1,5 +1,5 @@
 
-## Unreleased
+## 1.5.0 (2020-01-29)
 
 + Ability to use parameters `password`/`database` instead of `passwd`/`db` in `SQLSchemaBuilder()` constructor.
 

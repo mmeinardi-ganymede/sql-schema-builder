@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.4.1'
+version = '1.5.0'
 
 setup(
     name='sql-schema-builder',
