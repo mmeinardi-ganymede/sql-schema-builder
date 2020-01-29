@@ -260,22 +260,23 @@ Available abbreviations and MySQL types they represent in DDL:
 
 | abbrev. | meaning |
 | -------- | -------- |
-| `I` | `INT(11)` |
-| `I1` | `TINYINT(4)` |
-| `I2` | `SMALLINT(6)` |
-| `I8` | `BIGINT(20)` |
-| `F` | `DOUBLE` |
+| `I`, `INT32` | `INT(11)` |
+| `I1`, `INT8` | `TINYINT(4)` |
+| `I2`, `INT16` | `SMALLINT(6)` |
+| `I8`, `INT64` | `BIGINT(20)` |
+| `F`, `DOUBLE` | `DOUBLE` |
 | `N` | `DECIMAL(10,2)` |
-| `C(n)` | `VARCHAR(n)` |
+| `C(n)`, `CHAR(n)` | `VARCHAR(n)` |
 | `MX` | `MEDIUMTEXT` |
-| `X` | `LONGTEXT` |
+| `X`, `TEXT` | `LONGTEXT` |
 | `MB` | `MEDIUMBLOB` |
-| `B` | `LONGBLOB` |
+| `B`, `BLOB` | `LONGBLOB` |
 | `BIN(n)` | `BINARY(n)` |
-| `J` | `JSON` |
+| `J`, `JSON` | `JSON` |
 | `D` | `DATE` |
 | `T` | `DATETIME` |
 | `ENUM(...)` | `ENUM(...)` |
+| `BOOL`, `BOOLEAN` | `TINYINT(1)` |
 
 You can use following attributes on columns (in that particular order):
 

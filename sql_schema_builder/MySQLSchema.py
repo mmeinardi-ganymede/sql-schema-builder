@@ -253,6 +253,18 @@ class MySQLSchema():
             'T': 'DATETIME',
 
             'ENUM': 'ENUM',
+
+            'INT8': 'TINYINT(4)',
+            'INT16': 'SMALLINT(6)',
+            'INT32': 'INT(11)',
+            'INT64': 'BIGINT(20)',
+            'CHAR': 'VARCHAR',
+            'DOUBLE': 'DOUBLE',
+            'TEXT': 'LONGTEXT',
+            'BLOB': 'LONGBLOB',
+            'JSON': 'JSON',
+            'BOOL': 'TINYINT(1)',
+            'BOOLEAN': 'TINYINT(1)',
         }
 
         fields = [x.strip() if not x.strip().endswith(',') else x.strip()[:-1].strip() for x in schema.splitlines()]
@@ -286,17 +298,17 @@ class MySQLSchema():
 
             if type not in column_types:
                 raise ValueError('Invalid type specifier: ' + field)
-            if type == 'C' and not type_arguments:
+            if type in ['C', 'CHAR'] and not type_arguments:
                 raise ValueError('Char type requires size: ' + field)
             if type == 'ENUM' and not type_arguments:
                 raise ValueError('Enum type requires list of possible values: ' + field)
             if type == 'BIN' and not type_arguments:
                 raise ValueError('Binary type requires size: ' + field)
-            if type not in ['C', 'ENUM', 'BIN'] and type_arguments:
+            if type not in ['C', 'CHAR', 'ENUM', 'BIN'] and type_arguments:
                 raise ValueError('Only char or enum type can have arguments: ' + field)
 
             column_definition = column_types[type]
-            if type in ['C', 'ENUM', 'BIN']:
+            if type in ['C', 'CHAR', 'ENUM', 'BIN']:
                 if type == 'ENUM':
                     # Strip whitespace between enum values for canonical form.
                     type_arguments = ','.join("'{}'".format(x) for x in re.findall(r"'([^']*?)'", type_arguments))
