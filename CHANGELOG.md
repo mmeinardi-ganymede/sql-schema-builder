@@ -1,6 +1,8 @@
 
 ## Unreleased
 
++ Ability to use parameters `password`/`database` instead of `passwd`/`db` in `SQLSchemaBuilder()` constructor.
+
 + Add longer aliases for column types in DDL, e.g. `INT64`, `TEXT`.
 
 * Better schema change detection in `ENUM` columns - independent of whitespaces used between values.

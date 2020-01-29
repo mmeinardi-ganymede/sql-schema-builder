@@ -220,6 +220,7 @@ That's because
     for schema manipulation and later data access.
     Parameters:
         * `create_db` - If set to `True` and the database doesn't exist yet, it will be created.
+        You can also use aliases `password` (instead of `passwd`) and `database` (instead of `db`).
 
 * `UpdateSchema(schema_dict, schema_version, post_migrate_callback=None, pre_migrate_callback=None)`
 

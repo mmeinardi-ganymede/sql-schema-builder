@@ -4,9 +4,14 @@ import pymysql
 
 class SQLSchemaBuilder:
 
-    def __init__(self, host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None, create_db=False):
+    def __init__(self, host=None, port=3306, user=None,
+                       passwd=None, password=None,
+                       db=None, database=None,
+                       pymysql_conn=None, create_db=False):
         self._conn = None
         self._conn_params = {}
+        passwd = passwd or password
+        db = db or database
 
         if pymysql_conn is not None:
             self._conn = pymysql_conn
