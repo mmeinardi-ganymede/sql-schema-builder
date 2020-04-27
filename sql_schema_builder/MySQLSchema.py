@@ -143,7 +143,7 @@ class MySQLSchema():
                     if field['name'] not in table_columns:
                         sql = 'ALTER TABLE {0} ADD COLUMN `{1}` {2} {3}'.format(
                             table_name, field['name'], field['column_definition'],
-                            'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
+                            'FIRST' if prev_field_name is None else 'AFTER `{0}`'.format(prev_field_name))
                         try:
                             cursor.execute(sql)
                         except pymysql.err.ProgrammingError as e:
@@ -158,7 +158,7 @@ class MySQLSchema():
 
                             sql = 'ALTER TABLE {0} CHANGE COLUMN `{1}` `{2}` {3} {4}'.format(
                                 table_name, field['name'], field['name'], field['column_definition'],
-                                'FIRST' if prev_field_name is None else 'AFTER {0}'.format(prev_field_name))
+                                'FIRST' if prev_field_name is None else 'AFTER `{0}`'.format(prev_field_name))
                             try:
                                 cursor.execute(sql)
                             except pymysql.err.ProgrammingError as e:
