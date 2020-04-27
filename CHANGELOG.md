@@ -1,5 +1,5 @@
 
-## Unreleased
+## 1.5.1 (2020-04-27)
 
 * Added more quoting of column names in SQL queries.
 
