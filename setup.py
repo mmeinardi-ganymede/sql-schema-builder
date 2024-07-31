@@ -9,7 +9,7 @@ setup(
     description='Library to keep SQL database schema up to date with your code.',
     author='Ganymede',
     author_email='mmeinardi@ganymede.eu',
-    license='Apache License, Version 2.0',
+    license='MIT License',
     url='https://github.com/mmeinardi-ganymede/sql-schema-builder',
     download_url='https://github.com/mmeinardi-ganymede/sql-schema-builder/tarball/{0}'.format(version),
     keywords=['pymysql sql schema builder mysql ddl migration migrate'],
