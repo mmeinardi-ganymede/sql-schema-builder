@@ -141,8 +141,6 @@ Its primary intent was to be used in web services written in non full-stack fram
 
 ## Shortcomings
 
-- So far only MySQL support.
-
 - Not all column types are supported.
 
 It's very easy to add new types when the need arises. Just modify `UpdateTableSchema()` function
@@ -212,7 +210,7 @@ That's because
 
 `SQLSchemaBuilder`
 
-* `SQLSchemaBuilder(host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None, create_db=False)`
+* `SQLSchemaBuilder(host=None, port=3306, user=None, passwd=None, db=None, pymysql_conn=None, create_db=False, db_type="mysql")`
 
     - Class constructor that expects address and credentials to the database on which schema you wish to operate on.
     If you are using [PyMySQL](https://github.com/PyMySQL/PyMySQL), you can alternatively pass its opened connection
@@ -221,6 +219,7 @@ That's because
     Parameters:
         * `create_db` - If set to `True` and the database doesn't exist yet, it will be created.
         You can also use aliases `password` (instead of `passwd`) and `database` (instead of `db`).
+        * `db_type` - Whether we connect to MySQL/MariaDB (`"mysql`" - default) or PostgreSQL (`"pgsql"`).
 
 * `UpdateSchema(schema_dict, schema_version, post_migrate_callback=None, pre_migrate_callback=None)`
 
@@ -259,25 +258,25 @@ That's because
 
 Available abbreviations and MySQL types they represent in DDL:
 
-| abbrev. | meaning |
-| -------- | -------- |
-| `I`, `INT32` | `INT(11)` |
-| `I1`, `INT8` | `TINYINT(4)` |
-| `I2`, `INT16` | `SMALLINT(6)` |
-| `I8`, `INT64` | `BIGINT(20)` |
-| `F`, `DOUBLE` | `DOUBLE` |
-| `N` | `DECIMAL(10,2)` |
-| `C(n)`, `CHAR(n)` | `VARCHAR(n)` |
-| `MX` | `MEDIUMTEXT` |
-| `X`, `TEXT` | `LONGTEXT` |
-| `MB` | `MEDIUMBLOB` |
-| `B`, `BLOB` | `LONGBLOB` |
-| `BIN(n)` | `BINARY(n)` |
-| `J`, `JSON` | `JSON` |
-| `D` | `DATE` |
-| `T` | `DATETIME` |
-| `ENUM(...)` | `ENUM(...)` |
-| `BOOL`, `BOOLEAN` | `TINYINT(1)` |
+| abbrev. | meaning MySQL | meaning PostgreSQL |
+| -------- | -------- | -------- |
+| `I`, `INT32` | `INT(11)` | `INTEGER` |
+| `I1`, `INT8` | `TINYINT(4)` | `SMALLINT` |
+| `I2`, `INT16` | `SMALLINT(6)` | `SMALLINT` |
+| `I8`, `INT64` | `BIGINT(20)` | `BIGINT` |
+| `F`, `DOUBLE` | `DOUBLE` | `DOUBLE PRECISION` |
+| `N` | `DECIMAL(10,2)` | `DECIMAL(10,2)` |
+| `C(n)`, `CHAR(n)` | `VARCHAR(n)` | `CHARACTER VARYING(n)` |
+| `MX` | `MEDIUMTEXT` | `TEXT` |
+| `X`, `TEXT` | `LONGTEXT` | `TEXT` |
+| `MB` | `MEDIUMBLOB` | `BYTEA` |
+| `B`, `BLOB` | `LONGBLOB` | `BYTEA` |
+| `BIN(n)` | `BINARY(n)` | `BYTEA` |
+| `J`, `JSON` | `JSON` | `JSON` |
+| `D` | `DATE` | `DATE` |
+| `T` | `DATETIME` | `TIME` |
+| `ENUM(...)` | `ENUM(...)` | `CHARACTER VARYING` |
+| `BOOL`, `BOOLEAN` | `TINYINT(1)` | `BOOLEAN` |
 
 You can use following attributes on columns (in that particular order):
 

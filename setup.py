@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.5.1'
+version = '1.6.0'
 
 setup(
     name='sql-schema-builder',
@@ -13,5 +13,5 @@ setup(
     url='https://github.com/mmeinardi-ganymede/sql-schema-builder',
     download_url='https://github.com/mmeinardi-ganymede/sql-schema-builder/tarball/{0}'.format(version),
     keywords=['pymysql sql schema builder mysql ddl migration migrate'],
-    install_requires=['pymysql']
+    install_requires=['pymysql', 'psycopg']
 )

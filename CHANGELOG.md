@@ -1,4 +1,9 @@
 
+## 1.6.0 (2025-09-25)
+
+! Added support for PostgreSQL. Use as `SQLSchemaBuilder(db_type="pgsql")`
+
+
 ## 1.5.1 (2020-04-27)
 
 * Added more quoting of column names in SQL queries.
