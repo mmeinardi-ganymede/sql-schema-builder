@@ -1,4 +1,9 @@
 
+## 1.6.1 (2025-09-26)
+
+* Fix required dependencies for PostgreSQL support.
+
+
 ## 1.6.0 (2025-09-25)
 
 ! Added support for PostgreSQL. Use as `SQLSchemaBuilder(db_type="pgsql")`
