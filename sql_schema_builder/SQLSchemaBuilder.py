@@ -88,6 +88,7 @@ class SQLSchemaBuilder:
                     passwd=self._conn_params['passwd'],
                     db=self._conn_params['db'],
                     charset='utf8mb4',
+                    connect_timeout=5,
                     autocommit=False)
             except pymysql.err.DatabaseError:
                 self._conn = None
@@ -100,6 +101,7 @@ class SQLSchemaBuilder:
                     user=self._conn_params['user'],
                     password=self._conn_params['passwd'],
                     dbname=self._conn_params['db'] or "postgres",
+                    connect_timeout=5,
                     autocommit=False)
             except psycopg.errors.DatabaseError:
                 self._conn = None

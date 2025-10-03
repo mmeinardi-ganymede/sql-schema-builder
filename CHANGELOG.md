@@ -1,4 +1,9 @@
 
+## 1.6.2 (2025-10-03)
+
+* Added timeout for connecting to the database.
+
+
 ## 1.6.1 (2025-09-26)
 
 * Fix required dependencies for PostgreSQL support.
